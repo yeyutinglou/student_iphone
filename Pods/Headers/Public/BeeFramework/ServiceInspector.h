@@ -1,0 +1,1 @@
+../../../BeeFramework/services/bee.services.inspector/source/ServiceInspector.h

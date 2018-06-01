@@ -1,0 +1,52 @@
+PODS:
+  - ASIHTTPRequest (1.8.2):
+    - ASIHTTPRequest/ASIWebPageRequest
+    - ASIHTTPRequest/CloudFiles
+    - ASIHTTPRequest/Core
+    - ASIHTTPRequest/S3
+  - ASIHTTPRequest/ASIWebPageRequest (1.8.2):
+    - ASIHTTPRequest/Core
+  - ASIHTTPRequest/CloudFiles (1.8.2):
+    - ASIHTTPRequest/Core
+  - ASIHTTPRequest/Core (1.8.2):
+    - Reachability
+  - ASIHTTPRequest/S3 (1.8.2):
+    - ASIHTTPRequest/Core
+  - BeeFramework (0.5.2):
+    - BeeFramework/Core
+    - BeeFramework/JSONKit
+  - BeeFramework/Core (0.5.2):
+    - ASIHTTPRequest
+    - BeeFramework/JSONKit
+    - FMDB
+    - OpenUDID
+    - Reachability
+    - TouchXML
+    - ZipArchive
+  - BeeFramework/JSONKit (0.5.2)
+  - CocoaAsyncSocket (7.3.5)
+  - FMDB (2.4):
+    - FMDB/standard
+  - FMDB/common (2.4)
+  - FMDB/standard (2.4):
+    - FMDB/common
+  - OpenUDID (1.0.0)
+  - Reachability (3.2)
+  - TouchXML (0.1)
+  - ZipArchive (1.3.0)
+
+DEPENDENCIES:
+  - BeeFramework
+  - CocoaAsyncSocket (~> 7.3.5)
+
+SPEC CHECKSUMS:
+  ASIHTTPRequest: 2c8335b49410c0e2ad42829c438e74d454b77590
+  BeeFramework: cfa6ccf29197b38027eac0951bfc898cb9eb27ab
+  CocoaAsyncSocket: 45bdbbc1c0a5ed0640ff4c42af325ba43a2f099a
+  FMDB: 0b2fa25e5264ef177973c0cb8c02c711107979aa
+  OpenUDID: 5a23b7477755efc2d7871b57aa79ba3089c40b74
+  Reachability: 1ef8adf5c4e3d362f96515d4278f68dad3c26930
+  TouchXML: fa552bd1f8b98cb5233be61622655796765fe535
+  ZipArchive: acd54f7131c2d2f45dc3f41c4f854501f222269f
+
+COCOAPODS: 0.34.4

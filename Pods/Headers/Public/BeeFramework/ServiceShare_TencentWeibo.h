@@ -1,0 +1,1 @@
+../../../BeeFramework/services/bee.services.share.tencentweibo/source/ServiceShare_TencentWeibo.h

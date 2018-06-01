@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[ClassRoomBoard handleRequest:]:ClassRoomBoard.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "SocketData sharedInstance].dictSocket[@&quot;courseSchedId&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[VerifyBoard handleRequest:]:VerifyBoard.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[VerifyBoard schoolDidChange:]:VerifyBoard.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[TeacherAskBoard showQuestionDetail]:TeacherAskBoard.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "delegate.isQuestionMode">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[VerifyBoard getAcademyList]:VerifyBoard.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ClassDetailBoard didReloadCount:]:ClassDetailBoard.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "dic[@&quot;courseSchedId&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ClassDetailBoard handleUISignal_ClassDetailBoard:]:ClassDetailBoard.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "arrayCourseCharacters.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SignupBoard handleUISignal_SignupBoard:]:SignupBoard.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "field[0].text">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[BaseBoard getSocketInfoJudgeTime]:BaseBoard.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "kUserInfo[@&quot;id&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[SocketData handleReceiveMessage:]:SocketData.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[PaintViewController showWhiteBoardDetail:]:PaintViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "decodedImage.userInfo">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui namespace="AppTabbar_iPhone">
+	
+	<row class="wrapper">
+		<image id="bg"/>
+		<row class="item-wrapper">
+			<image id="img_tab0" class="item-active-bg"></image>
+			<button id="btn_tab0" class="item-icon icon-tab01"></button>
+            <row class="badge-wrapper">
+				<image id="badge-bg0" class="badge-bg"/>
+				<label id="badge0" class="badge-number"/>
+			</row>
+		</row>
+		<row class="item-wrapper">
+			<image id="img_tab1" class="item-active-bg"></image>
+			<button id="btn_tab1" class="item-icon icon-tab02"></button>
+            <row class="badge-wrapper">
+				<image id="badge-bg1" class="badge-bg"/>
+				<label id="badge1" class="badge-number"/>
+			</row>
+		</row>
+		<row class="item-wrapper">
+			<image id="img_tab2" class="item-active-bg"></image>
+			<button id="btn_tab2" class="item-icon icon-tab03"></button>
+			<row class="badge-wrapper">
+				<image id="badge-bg2" class="badge-bg"/>
+				<label id="badge2" class="badge-number"/>
+			</row>
+		</row>
+		<row class="item-wrapper">
+			<image id="img_tab3" class="item-active-bg"></image>
+			<button id="btn_tab3" class="item-icon icon-tab04"></button>
+            <row class="badge-wrapper">
+				<image id="badge-bg3" class="badge-bg"/>
+				<label id="badge3" class="badge-number"/>
+			</row>
+		</row>
+        <row class="item-wrapper">
+            <image id="img_tab4" class="item-active-bg"></image>
+            <button id="btn_tab4" class="item-icon icon-tab05"></button>
+            <row class="badge-wrapper">
+                <image id="badge-bg4" class="badge-bg"/>
+                <label id="badge4" class="badge-number"/>
+            </row>
+        </row>
+	</row>
+    
+	<style type="text/css">
+		#bg {
+            image: url(tabbar_bg.png);
+            image-insets: 0 25;
+            image-mode: fit;
+            position: absolute;
+            left: 0;
+            top: 0;
+		}
+		
+		.wrapper {
+            width: 100%;
+            height: 100%;
+            float: center;
+		}
+		
+		.item-wrapper {
+            width: 20%;
+            height: 100%;
+		}
+		
+		.item-active-bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            image: url(footer_active_bg.png);
+		}
+		
+		.item-icon {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+		}
+		
+		.icon-tab01 {
+            image: url(tab_0.png);
+            image-selected: url(tab_0_pre.png);
+		}
+		
+		.icon-tab02 {
+            image: url(tab_1.png);
+            image-selected: url(tab_1_pre.png);
+		}
+		
+		.icon-tab03 {
+            image: url(tab_2.png);
+            image-selected: url(tab_2_pre.png);
+		}
+		
+		.icon-tab04 {
+            image: url(tab_3.png);
+            image-selected: url(tab_3_pre.png);
+		}
+        
+        .icon-tab05 {
+        image: url(tab_4.png);
+        image-selected: url(tab_4_pre.png);
+        }
+		
+		.badge-wrapper {
+            width: auto;
+            height: 17px;
+            position: absolute;
+            left: 45px;
+            top: 0px;
+		}
+		
+		.badge-bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            image-src: url(friend_badge.png);
+		}
+		
+		.badge-number {
+            width: auto;
+            height: 100%;
+            color: white;
+            margin-left: 8px;
+            margin-right: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+		}
+		
+	</style>
+</ui>
+
+
+<!--
+<ui namespace="AppTabbar_iPhone">
+
+
+    <row class="wrapper">
+        <image id="bg" />
+        <row class="item-wrapper">
+            <image id="img-tab0" class="item-active-bg"></image>
+            <button id="btn-tab0" class="item-icon icon-tab0"></button>
+        </row>
+        <row class="item-wrapper">
+            <image id="img-tab1" class="item-active-bg"></image>
+            <button id="btn-tab1" class="item-icon icon-tab1"></button>
+        </row>
+        <row class="item-wrapper">
+            <image id="img-tab2" class="item-active-bg"></image>
+            <button id="btn-tab2" class="item-icon icon-tab2"></button>
+        </row>
+        <row class="item-wrapper">
+            <image id="img-tab3" class="item-active-bg"></image>
+            <button id="btn-tab3" class="item-icon icon-tab3"></button>
+        </row>
+        <row class="item-wrapper">
+            <image id="img-tab4" class="item-active-bg"></image>
+            <button id="btn-tab4" class="item-icon icon-tab4"></button>
+        </row>
+    </row>
+    
+    <style type="text/css">
+        #bg {
+            image: url(tab_bg.png);
+            image-insets: 0 0;
+            image-mode: fit;
+            postion: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .wrapper {
+            width: 100%;
+            height: 100%;
+            float: center;
+        }
+        
+        .item-wrapper {
+            width: 20%;
+            height: 100%;
+        }
+        
+        .item-active-bg {
+            width: 100%;
+            height: 100%;
+            postion: absolute;
+            left: 0;
+            top: 3px;
+            image: url(tab_bg.png);
+        }
+        
+        .item-icon {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+		}
+		
+		.icon-tab0 {
+            image: url(icon_tab0.png);
+            image-selected: url(icon_tab0_selected.png);
+		}
+        
+        .icon-tab1 {
+            image: url(icon_tab1.png);
+            image-selected: url(icon_tab1_selected.png);
+		}
+        
+        .icon-tab2 {
+            image: url(icon_tab2.png);
+            image-selected: url(icon_tab2_selected.png);
+		}
+        
+        .icon-tab3 {
+            image: url(icon_tab3.png);
+            image-selected: url(icon_tab3_selected.png);
+		}
+        
+        .icon-tab4 {
+            image: url(icon_tab4.png);
+            image-selected: url(icon_tab4_selected.png);
+		}
+    </style>
+</ui>-->
+
+<!-- 
+Sample:
+
+	<layout>
+		<container orientation="vertical" autoresize_height="false">
+			<view class="BeeUIButton" id="welcome" h="60%" style="welcome"/>
+			<space h="2.5%"/>
+			<container orientation="horizonal" h="10%">
+				<space w="4%"/>
+				<view class="BeeUIButton" id="facebook" w="92%" style="facebook"/>
+				<space w="4%"/>
+			</container>
+            <space h="2.5%"/>
+			<container orientation="horizonal" h="10%">
+				<space w="4%"/>
+				<view class="BeeUIButton" id="twitter" w="44%" style="twitter"/>
+				<space w="4%"/>
+				<view class="BeeUIButton" id="google" w="44%" style="google"/>
+				<space w="4%"/>
+			</container>
+			<space h="2.5%"/>
+			<container orientation="horizonal" h="10%">
+				<space w="4%"/>
+				<view class="BeeUIButton" id="sign-up" w="44%" style="sign-up"/>
+				<space w="4%"/>
+				<view class="BeeUIButton" id="sign-in" w="44%" style="sign-in"/>
+				<space w="4%"/>
+			</container>
+		</container>
+	</layout>
+
+	<style id="welcome">
+		font:	'24, bold';
+		color:	#369;
+		text:	"We are the champion!";
+	</style>
+	<style id="facebook">
+		{
+			"font" :	"18, bold",
+			"color" :	"#666",
+			"text" :	"Facebook"
+		}
+	</style>
+	<style id="twitter">
+		{
+			"font" :	"18, bold",
+			"color" :	"#666",
+			"text" :	"Twitter"
+		}
+	</style>
+	<style id="google">
+		{
+			"font" :	"18, bold",
+			"color" :	"#666",
+			"text" :	"Google"
+		}
+	</style>
+	<style id="sign-up">
+		font:	'18, bold';
+		color:	#666;
+		text:	"Sign up";
+	</style>
+	<style id="sign-in">
+		font:	'18, bold';
+		color:	#666;
+		text:	"Sign in";
+	</style>
+-->

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[BeeUINavigationBar applyBarStyle]:Bee_UINavigationBar.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[[[UIDevice currentDevice] systemVersion] compare:@&quot;8.0&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

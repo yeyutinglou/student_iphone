@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "bbacd258-4a6b-11e2-ae1c-859b02d95312++6373",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "bbacd258-4a6b-11e2-ae1c-859b02d95312++6373" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "bbacd258-4a6b-11e2-ae1c-859b02d95312++6373" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E3F3B9B5-334E-4189-89ED-0027A95A975B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "bbacd258-4a6b-11e2-ae1c-859b02d95312++6373" : "student_iphone\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "student_iphone",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "student_iphone.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/111.204.62.1:8888\/svn\/test",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "bbacd258-4a6b-11e2-ae1c-859b02d95312++6373"
+    }
+  ]
+}

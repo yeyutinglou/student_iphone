@@ -1,0 +1,180 @@
+//
+//  DownloadPopupCell.m
+//  ClassRoom
+//
+//  Created by he chao on 8/9/14.
+//  Copyright (c) 2014 he chao. All rights reserved.
+//
+
+#import "DownloadPopupCell.h"
+#import "ClassDetailBoard.h"
+#import "CurriculumBoard.h"
+#import "MyClassBoard.h"
+
+@implementation DownloadPopupCell
+DEF_SIGNAL(DOWNLOAD)
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        // Initialization code
+    }
+    return self;
+}
+
+- (void)awakeFromNib
+{
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+- (void)initSelf{
+    title = [BaseLabel initLabel:@"12345555.ppt" font:FONT(14) color:[UIColor blackColor] textAlignment:NSTextAlignmentLeft];
+    title.frame = CGRectMake(15, 0, 200, 50);
+    title.tag = 9527;
+    [self.contentView addSubview:title];
+    
+    icon = [BeeUIImageView spawn];
+    icon.image = IMAGESTRING(@"teacher_download");
+    icon.frame = CGRectMake(220, 0, 50, 50);
+    icon.tag = 9528;
+    [self.contentView addSubview:icon];
+    
+    status = [BaseLabel initLabel:@"" font:FONT(14) color:[UIColor blackColor] textAlignment:NSTextAlignmentRight];
+    status.frame = CGRectMake(0, 0, 270, 50);
+    status.tag = 9529;
+    [self.contentView addSubview:status];
+}
+
+- (void)load{
+    title.text = [NSString stringWithFormat:@"%@.%@",_dict[@"name"],_dict[@"resExtName"]];
+    strPDFKey = [NSString stringWithFormat:@"%@.%@",_dict[@"name"],@"pdf"];
+    if (self.isVideo) {
+        icon.hidden = YES;
+        status.text = @"播放";
+        status.hidden = NO;
+        
+        JYDLog(@"<------>%@", _dict);
+        
+        if (_isMyClass) {
+            //[self.contentView makeTappable:MyClassBoard.PLAY_VIDEO withObject:_dict[@"resUrl"]];
+            
+            //add by zhaojian
+            [self.contentView makeTappable:MyClassBoard.PLAY_VIDEO withObject:_dict];
+        }
+        else {
+            //[self.contentView makeTappable:self.isCurriculum?CurriculumBoard.PLAY_VIDEO:ClassDetailBoard.PLAY_VIDEO withObject:_dict[@"resUrl"]];
+            
+            //add by zhaojian
+            [self.contentView makeTappable:self.isCurriculum?CurriculumBoard.PLAY_VIDEO:ClassDetailBoard.PLAY_VIDEO withObject:_dict];
+        }
+        
+        //[self sendUISignal:ClassDetailBoard.PLAY_VIDEO withObject:self.arrayData[indexPath.row][@"resUrl"]];
+    }
+    else {
+        icon.hidden = NO;
+        status.hidden = YES;
+        
+        if ([[BeeFileCache sharedInstance] hasObjectForKey:strPDFKey]) {
+            icon.hidden = YES;
+            status.hidden = NO;
+            status.text = @"已下载";
+            if (_isMyClass) {
+                [self.contentView makeTappable:MyClassBoard.OPEN_FILE withObject:strPDFKey];
+            }
+            else {
+                [self.contentView makeTappable:self.isCurriculum?CurriculumBoard.OPEN_FILE:ClassDetailBoard.OPEN_FILE withObject:strPDFKey];
+            }
+        }
+        else {
+            [self.contentView makeTappable:DownloadPopupCell.DOWNLOAD withObject:_dict[@"playUrl"]];
+            
+        }
+        
+    }
+}
+
+ON_SIGNAL2(DownloadPopupCell, signal){
+    if ([signal is:DownloadPopupCell.DOWNLOAD]) {
+        icon.hidden = YES;
+        status.hidden = NO;
+        status.text = @"正在下载";
+        NSString *strUrl = signal.object;
+        JYDLog(@"正在下载:%@", strUrl);
+       [self GET:strUrl];
+    }
+}
+
+- (void)handleRequest:(BeeRequest *)request
+{
+    if(request.failed)
+    {
+        NETWORK_ERROR
+        [[BeeUITipsCenter sharedInstance] dismissTips];
+        //[[BeeUITipsCenter sharedInstance] presentFailureTips:@"加载失败"];
+    }
+    else if (request.succeed)
+    {
+        status.text = @"已下载";
+        [[BeeFileCache sharedInstance] setObject:request.responseData forKey:strPDFKey];
+        [self load];
+        [self downloadHaveGold];
+        [self downloadSoucreCount];
+    }
+}
+
+//下载获取积分
+-(void)downloadHaveGold{
+    AFHTTPRequestOperationManager *manager = [ AFHTTPRequestOperationManager manager];
+    NSMutableDictionary *parms = [[NSMutableDictionary alloc] init];
+    parms[@"stuId"] = kUserId;
+    NSDictionary *teachDic =[[NSUserDefaults standardUserDefaults] objectForKey:@"teachers"];
+    if (teachDic) {
+        parms[@"teaId"] = teachDic[@"teacherId"];
+    }
+    
+    NSString *url = [NSString stringWithFormat:@"%@app/integral/stu_down_res.action",kSchoolUrl];
+    [manager GET:url parameters:parms success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([responseObject[@"STATUS"] isEqualToString:STATUS_SUCCESS]) {
+            NSLog(@"积分添加成功");
+            //[self makeTappable:ClassDetailBoard.RELOAD_COUNT withObject:_dict];
+            
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+    }];
+
+}
+
+
+/**
+ *  统计资源下载次数
+ */
+-(void)downloadSoucreCount{
+   
+
+    AFHTTPRequestOperationManager *manager = [ AFHTTPRequestOperationManager manager];
+    [manager.requestSerializer setValue:kUserInfo[@"sessionId"] forHTTPHeaderField:@"sessionId"];
+    NSMutableDictionary *parms = [[NSMutableDictionary alloc] init];
+    parms[@"id"] = kUserId;
+    parms[@"resId"] = _dict[@"resId"];
+    
+    
+    NSString *url = [NSString stringWithFormat:@"%@app/res/save_res_down_log.action",kSchoolUrl];
+    [manager GET:url parameters:parms success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([responseObject[@"STATUS"] isEqualToString:STATUS_SUCCESS]) {
+            NSLog(@"资源下载次数统计成功");
+             [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadCount" object:_dict] ;
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+    }];
+}
+@end

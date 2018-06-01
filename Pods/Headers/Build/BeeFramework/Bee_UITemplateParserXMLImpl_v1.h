@@ -1,0 +1,1 @@
+../../../BeeFramework/framework/mvc/view/template/parsers/Bee_UITemplateParserXMLImpl_v1.h

@@ -1,0 +1,336 @@
+//
+//	 ______    ______    ______    
+//	/\  __ \  /\  ___\  /\  ___\   
+//	\ \  __<  \ \  __\_ \ \  __\_ 
+//	 \ \_____\ \ \_____\ \ \_____\ 
+//	  \/_____/  \/_____/  \/_____/ 
+//
+//	Powered by BeeFramework
+//
+//
+//  SignupBoard.m
+//  ClassRoom
+//
+//  Created by he chao on 7/5/14.
+//  Copyright (c) 2014 he chao. All rights reserved.
+//
+
+#import "SignupBoard.h"
+
+#pragma mark -
+
+@interface SignupBoard()
+{
+	//<#@private var#>
+}
+@end
+
+@implementation SignupBoard
+DEF_SIGNAL(DONE)
+DEF_SIGNAL(CODE)
+DEF_SIGNAL(HIDE)
+
+- (void)load
+{
+    count = 90;
+}
+
+- (void)unload
+{
+}
+
+#pragma mark - Signal
+
+ON_CREATE_VIEWS( signal )
+{
+    [self showNaviBar];
+    [self showBackBtn];
+    self.title = @"注册";
+    [self loadContent];
+}
+
+ON_DELETE_VIEWS( signal )
+{
+}
+
+ON_LAYOUT_VIEWS( signal )
+{
+}
+
+ON_WILL_APPEAR( signal )
+{
+}
+
+ON_DID_APPEAR( signal )
+{
+}
+
+ON_WILL_DISAPPEAR( signal )
+{
+}
+
+ON_DID_DISAPPEAR( signal )
+{
+}
+
+ON_SIGNAL3( BeeUINavigationBar, LEFT_TOUCHED, signal )
+{
+    [self.stack popBoardAnimated:YES];
+}
+
+ON_SIGNAL3( BeeUINavigationBar, RIGHT_TOUCHED, signal )
+{
+}
+
+ON_SIGNAL2(SignupBoard, signal){
+    if ([signal is:SignupBoard.DONE]) {
+        if (kStrTrim(field[0].text).length!=11) {
+            [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请输入正确的手机号码"];
+            return;
+        }
+//        if (field[1].text.length ==0) {
+//            [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请输入验证码"];
+//            return;
+//        }
+        if (field[1].text.length ==0) {
+            [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请输入密码"];
+            return;
+        }
+        
+        if ([self.dictSchool[@"verificationType"] isEqualToString:@"1"]) {
+            //第三方例如中医药大学，则不需要进行确认密码判断
+        }
+        else{
+            
+            if (field[2].text.length ==0) {
+                [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请输入重复密码"];
+                return;
+            }
+            
+            if (![field[1].text isEqualToString:field[2].text]) {
+                [[BeeUITipsCenter sharedInstance] presentMessageTips:@"两次密码输入不一致,请重新输入"];
+                return;
+            }
+        }
+        
+        //[self.stack pushBoard:[MainBoard sharedInstance] animated:YES];
+        //comment by zhaojian 2015-08-12
+        //BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/user/register.action"]].PARAM(@"phone",field[0].text).PARAM(@"id",self.dictUser[@"id"]).PARAM(@"validStr",self.dictUser[@"validStr"]).PARAM(@"validCode",@"123456").PARAM(@"password",@"123456").PARAM(@"confirmPassword",@"123456");
+        //request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+        //request.tag = 9528;
+        
+        JYDLog(@"%@", field[0].text);
+        JYDLog(@"%@", field[2].text);
+        JYDLog(@"%@", self.dictSchool[@"verificationUrl"]);
+
+        //add by zhaojian 2015-08-12
+        BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/user/register.action"]].PARAM(@"phone",field[0].text).PARAM(@"id",self.dictUser[@"id"]).PARAM(@"validStr",self.dictUser[@"validStr"]).PARAM(@"validCode",@"123456").PARAM(@"password",field[1].text).PARAM(@"confirmPassword",field[2].text).PARAM(@"verificationType",self.dictSchool[@"verificationType"]).PARAM(@"verificationUrl",self.dictSchool[@"verificationUrl"]).PARAM(@"userLevel",self.dictUser[@"userLevel"]).PARAM(@"username",self.dictUser[@"userName"]);
+  
+        request.tag = 9528;
+        [[BeeUITipsCenter sharedInstance] presentLoadingTips:@"正在注册"];
+        
+ 
+    }
+    else if ([signal is:SignupBoard.CODE]) {
+        
+        if (kStrTrim(field[0].text).length!=11) {
+            [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请输入正确的手机号码"];
+            return;
+        }
+        
+        btnCode.userInteractionEnabled = NO;
+        btnCode.backgroundColor = [UIColor lightGrayColor];
+        
+        if (count!=0 &&count!=90)
+        {
+            return;
+        }
+        
+        BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/user/send_sms.action"]].PARAM(@"phone",field[0].text).PARAM(@"smsType",@"1").PARAM(@"sign",[[NSString stringWithFormat:@"%@%@",field[0].text,kAppKey] MD5]);
+        //request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+        request.tag = 9527;
+    }
+    else if ([signal is:SignupBoard.HIDE]){
+        for (int i = 0; i < 3; i++) {
+            [field[i] resignFirstResponder];
+        }
+    }
+}
+
+- (void)handleRequest:(BeeRequest *)request
+{
+    if(request.failed)
+    {
+        [[BeeUITipsCenter sharedInstance] dismissTips];
+        NETWORK_ERROR
+        //[[BeeUITipsCenter sharedInstance] presentFailureTips:@"加载失败"];
+        
+        btnCode.userInteractionEnabled = YES;
+        btnCode.backgroundColor = RGB(58, 164, 40);
+    }
+    else if (request.succeed)
+    {
+        [[BeeUITipsCenter sharedInstance] dismissTips];
+        id json = [request.responseString mutableObjectFromJSONString];
+        NSLog(@"%@",json);
+        switch ([json[@"STATUS"] intValue]) {
+            case 0:
+            {
+                switch (request.tag) {
+                    case 9527:
+                    {
+                        [[BeeUITipsCenter sharedInstance] presentMessageTips:@"发送验证码成功"];
+                        //默认验证码--comment by zhaojian 2015-10-06
+                        //field[1].text = @"123456";
+                        count = 90;
+                        [self performSelector:@selector(countDown) withObject:nil afterDelay:1];
+                    }
+                        break;
+                    case 9528:
+                    {
+                        [BeeUIAlertView showMessage:@"注册成功" cancelTitle:@"确定"];
+//                        在平台中写入手机号
+                        [self creatPhoneNum];
+                       [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"hasLogin"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[json[@"result"] JSONString] forKey:@"userInfo"];
+                        [[NSUserDefaults standardUserDefaults] setObject:json[@"downloadType"] forKey:@"downloadType"];
+                        [self.stack pushBoard:[MainBoard sharedInstance] animated:YES];
+                        [[MainBoard sharedInstance] getSignTime];
+                        [[MessageRequest sharedInstance] setModel:NO];
+                    }
+                        break;
+                    case 9529:
+                    {
+
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                
+            }
+                break;
+            case 2:
+                break;
+            case 110:
+            {
+                //[[LoginBoard sharedInstance] autoLogin];
+            }
+                break;
+            default:
+            {
+                switch ([json[@"ERRCODE"] intValue]) {
+                    case 110:
+                    {
+                        //[[LoginBoard sharedInstance] autoLogin];
+                    }
+                        break;
+                        
+                    default:
+                    {
+                        [[BeeUITipsCenter sharedInstance] presentFailureTips:json[@"ERRMSG"]];
+                    }
+                        break;
+                }
+            }
+                break;
+        }
+    }
+}
+
+
+//在平台中写入手机号
+//add by dyw
+-(void)creatPhoneNum{
+//    http://192.168.11.48:88/ve/qxktservices/qxkt.shtml?method=boundMobileStu&stuNo=1111&phone=15111112222
+    BeeHTTPRequest *request = [self POST:@"http://192.168.11.48:88/ve/qxktservices/qxkt.shtml"].PARAM(@"method",@"boundMobileStu").PARAM(@"stuNo",self.dictUser[@"stuNum"]).PARAM(@"phone",field[0].text);
+    request.tag = 625;
+}
+
+- (void)loadContent{
+    [self.view makeTappable:SignupBoard.HIDE];
+    //BOOL isTeacher = YES;
+//    NSArray *titles = @[@"手机:",@"验证码:",@"密码:",@"确认:"];
+     NSArray *titles = @[@"手机:",@"密码:",@"确认:"];
+    //NSArray *widths = @[@"115",@"65",@"220",@"220"];
+     NSArray *widths = @[@"220",@"220",@"220"];
+    
+    //add by zhaojian 2015-08-12
+    NSUInteger fieldNums  = 3;
+    
+    if ([self.dictSchool[@"verificationType"] isEqualToString:@"1"]) {
+        fieldNums = 3;//第三方例如中医药大学，则不创建确认密码一栏
+    }
+    
+    for (int i = 0; i < fieldNums; i++) {
+        BaseLabel *lb = [BaseLabel initLabel:titles[i] font:FONT(14) color:[UIColor blackColor] textAlignment:NSTextAlignmentLeft];
+        lb.frame = CGRectMake(20, 20+45*i, 100, 30);
+        [self.view addSubview:lb];
+        
+        field[i] = [[UITextField alloc] init];
+        field[i].frame = CGRectMake(75, lb.top, [widths[i] floatValue], 30);
+        field[i].layer.borderColor = [UIColor grayColor].CGColor;
+        field[i].layer.cornerRadius = 3;
+        field[i].layer.borderWidth = 0.5;
+        field[i].delegate = self;
+        field[i].contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        [self.view addSubview:field[i]];
+    }
+    if (![self.dictSchool[@"verificationType"] isEqualToString:@"1"]) {
+        field[0].text = self.dictUser[@"phone"];
+        //field[0].userInteractionEnabled = NO;
+    }
+    field[0].keyboardType = UIKeyboardTypeNumberPad;
+//    field[1].keyboardType = UIKeyboardTypeNumberPad;
+    field[1].secureTextEntry = YES;
+    field[2].secureTextEntry = YES;
+    
+    if ([self.dictUser[@"phone"] isKindOfClass:[NSString class]] && [self.dictUser[@"phone"] length]==11) {
+        field[0].text = self.dictUser[@"phone"];
+        //field[0].userInteractionEnabled = NO;
+    }
+    
+    //BaseButton *btnCode = [BaseButton spawn];
+    btnCode = [BaseButton spawn];
+    btnCode.frame = CGRectMake(200, 20, 110, 35);
+    btnCode.backgroundColor = RGB(58, 164, 40);
+    btnCode.layer.cornerRadius = 3;
+    [btnCode setTitle:@"获取验证码" forState:UIControlStateNormal];
+    [btnCode addSignal:SignupBoard.CODE forControlEvents:UIControlEventTouchUpInside];
+   // [self.view addSubview:btnCode];
+    
+    time = [BaseLabel initLabel:@"90" font:FONT(12) color:[UIColor redColor] textAlignment:NSTextAlignmentRight];
+    time.frame = CGRectMake(145, 65, 25, 30);
+    //[self.view addSubview:time];
+    
+    BaseLabel *lb2 = [BaseLabel initLabel:@"秒后点击重新发送验证码" font:time.font color:[UIColor grayColor] textAlignment:NSTextAlignmentLeft];
+    lb2.frame = CGRectMake(time.right+2, time.top, 200, time.height);
+    //[self.view addSubview:lb2];
+    
+    BaseButton *btnVerify = [BaseButton initBaseBtn:IMAGESTRING(@"btn1") highlight:nil text:@"完 成" textColor:[UIColor whiteColor] font:FONT(24)];
+    btnVerify.frame = CGRectMake(10, 250, 300, 40);
+    [btnVerify addSignal:SignupBoard.DONE forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:btnVerify];
+}
+
+- (void)countDown
+{
+    count--;
+    
+    if (count>0)
+    {
+        [self performSelector:@selector(countDown) withObject:nil afterDelay:1];
+    }
+    else
+    {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(countDown) object:nil];
+        
+        btnCode.userInteractionEnabled = YES;
+        btnCode.backgroundColor = RGB(58, 164, 40);
+    }
+    
+    time.text = [NSString stringWithFormat:@"%d",count];
+}
+
+@end

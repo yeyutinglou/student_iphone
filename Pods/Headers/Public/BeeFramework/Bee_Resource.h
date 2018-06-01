@@ -1,0 +1,1 @@
+../../../BeeFramework/framework/system/resource/Bee_Resource.h

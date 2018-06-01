@@ -1,0 +1,1 @@
+../../../BeeFramework/framework/vendor/Bee_VendorConfig.h

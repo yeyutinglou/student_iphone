@@ -1,0 +1,54 @@
+//
+//	 ______    ______    ______    
+//	/\  __ \  /\  ___\  /\  ___\   
+//	\ \  __<  \ \  __\_ \ \  __\_ 
+//	 \ \_____\ \ \_____\ \ \_____\ 
+//	  \/_____/  \/_____/  \/_____/ 
+//
+//	Powered by BeeFramework
+//
+//
+//  BaseBoard.h
+//  Walker
+//
+//  Created by he chao on 3/10/14.
+//    Copyright (c) 2014 leon. All rights reserved.
+//
+
+#import "Bee.h"
+
+#pragma mark -
+///add by liuhui
+@class SocketData;
+@class chooseBuildingAndFloor;
+@class SingalLetonButton;
+@interface BaseBoard : BeeUIBoard<UITableViewDelegate,UITableViewDataSource>{
+    BeeUIScrollView *myScrollView;
+    UITableView *myTableView;
+    BeeUIButton *btnNavi[3];
+    BeeUIImageView *imgPkBadge;
+    UIView *popupView;
+//    UIButton *btnAirPlay;
+    /////add by liuhui
+    NSMutableDictionary *dictSocket;
+}
+@property (nonatomic,strong)SingalLetonButton *btnAirPlay;
+@property (nonatomic,strong)chooseBuildingAndFloor *chooseView;
+@property (nonatomic,strong)UIView *cover;
+
+AS_SIGNAL(NAVI_BTN)
+AS_SIGNAL(HIDE_POPUP)
+AS_SIGNAL(PANEL)
+AS_SIGNAL(MY_INFO)
+AS_SIGNAL(MY_CHECKIN)
+AS_SIGNAL(MY_NOTE)
+AS_SIGNAL(MY_CLASS)
+AS_SIGNAL(SETTING)
+AS_SIGNAL(MY_CENTER)
+- (void)showNaviBar;
+- (void)showBackBtn;
+- (void)showNaviBtns;
+- (void)showMenuBtn;
+- (void)closeAnimating;
+
+@end

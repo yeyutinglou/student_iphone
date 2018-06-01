@@ -1,0 +1,9 @@
+CLANG_CXX_LANGUAGE_STANDARD = gnu++0x
+CLANG_CXX_LIBRARY = libstdc++
+CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/ASIHTTPRequest" "${PODS_ROOT}/Headers/Public/BeeFramework" "${PODS_ROOT}/Headers/Public/CocoaAsyncSocket" "${PODS_ROOT}/Headers/Public/FMDB" "${PODS_ROOT}/Headers/Public/OpenUDID" "${PODS_ROOT}/Headers/Public/Reachability" "${PODS_ROOT}/Headers/Public/TouchXML" "${PODS_ROOT}/Headers/Public/ZipArchive" "$(SDKROOT)/usr/include/libxml2" $(SDKROOT)/usr/include/libz, $(SDKROOT)/usr/include/libxml2
+OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/ASIHTTPRequest" -isystem "${PODS_ROOT}/Headers/Public/BeeFramework" -isystem "${PODS_ROOT}/Headers/Public/CocoaAsyncSocket" -isystem "${PODS_ROOT}/Headers/Public/FMDB" -isystem "${PODS_ROOT}/Headers/Public/OpenUDID" -isystem "${PODS_ROOT}/Headers/Public/Reachability" -isystem "${PODS_ROOT}/Headers/Public/TouchXML" -isystem "${PODS_ROOT}/Headers/Public/ZipArchive"
+OTHER_LDFLAGS = -ObjC -l"Pods-ASIHTTPRequest" -l"Pods-BeeFramework" -l"Pods-CocoaAsyncSocket" -l"Pods-FMDB" -l"Pods-OpenUDID" -l"Pods-Reachability" -l"Pods-TouchXML" -l"Pods-ZipArchive" -l"sqlite3" -l"xml2" -l"xml2.2" -l"z" -l"z.1" -framework "AVFoundation" -framework "CFNetwork" -framework "CoreGraphics" -framework "CoreMedia" -framework "CoreVideo" -framework "MobileCoreServices" -framework "QuartzCore" -framework "Security" -framework "SystemConfiguration"
+OTHER_LIBTOOLFLAGS = $(OTHER_LDFLAGS)
+PODS_ROOT = ${SRCROOT}/Pods

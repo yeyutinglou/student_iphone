@@ -1,0 +1,169 @@
+//
+//  MyCheckinCell.m
+//  ClassRoom
+//
+//  Created by he chao on 14-6-26.
+//  Copyright (c) 2014年 he chao. All rights reserved.
+//
+
+#import "MyCheckinCell.h"
+
+@implementation MyCheckinCell
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        // Initialization code
+    }
+    return self;
+}
+
+- (void)awakeFromNib
+{
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+- (void)initSelf{
+    name = [BaseLabel initLabel:@"计算机数据结构" font:BOLDFONT(16) color:[UIColor blackColor] textAlignment:NSTextAlignmentLeft];
+    name.frame = CGRectMake(10, 0, 200, 30);
+    [self addSubview:name];
+    
+    teacher = [BaseLabel initLabel:@"小明教授" font:FONT(11) color:RGB(102, 102, 102) textAlignment:NSTextAlignmentLeft];
+    teacher.frame = CGRectMake(name.left, name.bottom-2, 200, 15);
+    [self addSubview:teacher];
+    
+    classroom = [BaseLabel initLabel:@"222教室" font:teacher.font color:teacher.textColor textAlignment:NSTextAlignmentLeft];
+    classroom.frame = CGRectMake(75, teacher.top, 200, teacher.height);
+    [self addSubview:classroom];
+    
+    time = [BaseLabel initLabel:@"2014.4-2014.9" font:teacher.font color:teacher.textColor textAlignment:NSTextAlignmentLeft];
+    time.frame = CGRectMake(145, teacher.top, 200, teacher.height);
+    [self addSubview:time];
+    
+//    count_uncheck = [[AttributedLabel alloc] initWithFrame:CGRectMake(228, teacher.top-4, 100, 17)];
+//    count_uncheck.text = @"未签到4次";
+//    [count_uncheck setColor:[UIColor blackColor] fromIndex:0 length:3];
+//    [count_uncheck setFont:FONT(5) fromIndex:0 length:3];
+//    [count_uncheck setColor:[UIColor redColor] fromIndex:3 length:1];
+//    [count_uncheck setFont:FONT(7) fromIndex:3 length:1];
+//    [count_uncheck setColor:[UIColor blackColor] fromIndex:4 length:43];
+//    [count_uncheck setFont:FONT(5) fromIndex:4 length:1];
+//    [self addSubview:count_uncheck];
+    
+    BaseLabel *lb = [BaseLabel initLabel:@"未签到      次" font:teacher.font color:[UIColor blackColor] textAlignment:NSTextAlignmentLeft];
+    lb.frame = CGRectMake(250, teacher.top, 80, teacher.height);
+    [self addSubview:lb];
+    
+    count_uncheck = [BaseLabel initLabel:@"1" font:FONT(14) color:[UIColor redColor] textAlignment:NSTextAlignmentCenter];
+    count_uncheck.frame = CGRectMake(278, teacher.top, 30, teacher.height);
+    [self addSubview:count_uncheck];
+    
+    viewCheckin = [[UIView alloc] initWithFrame:CGRectMake(10, 48, 320-20, 45*4)];
+    viewCheckin.layer.borderWidth = 0.5;
+    viewCheckin.backgroundColor = [UIColor whiteColor];
+    viewCheckin.layer.borderColor = RGB(202, 202, 202).CGColor;
+    [self addSubview:viewCheckin];
+    
+    /*
+    for (int i = 0; i < 40; i++) {
+        line[i] = [BeeUIImageView spawn];
+        line[i].frame = CGRectMake(viewCheckin.left, viewCheckin.top+45*i, viewCheckin.width, 0.5);
+        line[i].backgroundColor = RGB(202, 202, 202);
+        [self addSubview:line[i]];
+        
+        date[i] = [BaseLabel initLabel:@"9.1" font:FONT(13) color:[UIColor blackColor] textAlignment:NSTextAlignmentCenter];
+        date[i].frame = CGRectMake(viewCheckin.left+(i%5)*(viewCheckin.width/5.0), viewCheckin.top+(i/5)*45, viewCheckin.width/5.0, 20);
+        [self addSubview:date[i]];
+        
+        imgStatus[i] = [BeeUIImageView spawn];
+        imgStatus[i].frame = CGRectMake(date[i].left, date[i].bottom-3, date[i].width, 45-17);
+        imgStatus[i].image = IMAGESTRING(@"my_checked");
+        [self addSubview:imgStatus[i]];
+    }*/
+}
+
+- (void)load{
+    name.text = self.dictCourse[@"courseName"];
+    teacher.text = self.dictCourse[@"teacherName"];
+    classroom.text = self.dictCourse[@"classroomName"];
+    time.text = [NSString stringWithFormat:@"%@-%@",[self getTime:self.dictCourse[@"beginDate"]],[self getTime:self.dictCourse[@"endDate"]]];
+    count_uncheck.text = [NSString stringWithFormat:@"%@",self.dictCourse[@"myNoSignNum"]];
+    if ([self.dictCourse[@"myNoSignNum"] intValue]==0) {
+        count_uncheck.textColor = [UIColor blackColor];
+    }
+    else {
+        count_uncheck.textColor = [UIColor redColor];
+    }
+    
+    BOOL isShow = [self.dictCourse[@"isShowSign"] boolValue];
+    viewCheckin.hidden = !isShow;
+    
+    for (int i = 0; i < 40; i++) {
+        line[i].hidden = YES;
+        date[i].hidden = YES;
+        imgStatus[i].hidden = YES;
+    }
+    
+    if (isShow) {
+        NSMutableArray *arraySign = self.dictCourse[@"sign"];
+        int count = ceil(arraySign.count/5.0);
+        viewCheckin.frame = CGRectMake(viewCheckin.left, viewCheckin.top, viewCheckin.width, 45*count);
+        for (int i = 0; i < count; i++) {
+            if (!line[i]) {
+                line[i] = [BeeUIImageView spawn];
+                line[i].frame = CGRectMake(viewCheckin.left, viewCheckin.top+45*i, viewCheckin.width, 0.5);
+                line[i].backgroundColor = RGB(202, 202, 202);
+                [self addSubview:line[i]];
+            }
+            line[i].hidden = NO;
+        }
+        
+        for (int i = 0; i < arraySign.count; i++) {
+            if (!date[i]) {
+                date[i] = [BaseLabel initLabel:@"9.1" font:FONT(13) color:[UIColor blackColor] textAlignment:NSTextAlignmentCenter];
+                date[i].frame = CGRectMake(viewCheckin.left+(i%5)*(viewCheckin.width/5.0), viewCheckin.top+(i/5)*45, viewCheckin.width/5.0, 20);
+                [self addSubview:date[i]];
+                
+                imgStatus[i] = [BeeUIImageView spawn];
+                imgStatus[i].frame = CGRectMake(date[i].left, date[i].bottom-3, date[i].width, 45-17);
+                imgStatus[i].image = IMAGESTRING(@"my_checked");
+                [self addSubview:imgStatus[i]];
+            }
+            date[i].hidden = NO;
+            imgStatus[i].hidden = NO;
+            NSMutableDictionary *dictSign = arraySign[i];
+            imgStatus[i].image = [dictSign[@"signStatus"] boolValue]?IMAGESTRING(@"my_checked"):IMAGESTRING(@"my_unchecked");
+            date[i].text = [NSString stringWithFormat:@"%@.%@",[dictSign[@"teachTime"] substringWithRange:NSMakeRange(4, 2)],[dictSign[@"teachTime"] substringWithRange:NSMakeRange(6, 2)]];
+        }
+        
+    }
+//    for (int i = 0; i < 20; i++) {
+//        line[i].hidden = YES;
+//        date[i].hidden = YES;
+//        imgStatus[i].hidden = YES;
+//        if (self.isShow) {
+//            if (i<4) {
+//                line[i].hidden = NO;
+//            }
+//            date[i].hidden = NO;
+//            
+//            imgStatus[i].hidden = NO;
+//            int status = rand()%2;
+//            imgStatus[i].image = status?IMAGESTRING(@"my_checked"):IMAGESTRING(@"my_unchecked");
+//        }
+//    }
+}
+
+- (NSString *)getTime:(NSString *)strDate{
+    return [NSString stringWithFormat:@"%@.%@",[strDate substringToIndex:4],[strDate substringWithRange:NSMakeRange(4, 2)]];
+}
+
+@end

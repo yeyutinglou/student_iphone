@@ -1,0 +1,213 @@
+//
+//	 ______    ______    ______    
+//	/\  __ \  /\  ___\  /\  ___\   
+//	\ \  __<  \ \  __\_ \ \  __\_ 
+//	 \ \_____\ \ \_____\ \ \_____\ 
+//	  \/_____/  \/_____/  \/_____/ 
+//
+//	Powered by BeeFramework
+//
+//
+//  AnswerCardBoard.m
+//  student_iphone
+//
+//  Created by he chao on 14/11/17.
+//  Copyright (c) 2014年 he chao. All rights reserved.
+//
+
+#import "AnswerCardBoard.h"
+#import "AnswerAnalysisBoard.h"
+
+#pragma mark -
+
+@interface AnswerCardBoard()
+{
+	//<#@private var#>
+    NSMutableArray *questionDetail;
+    __weak IBOutlet UILabel *lbClassName;
+    __weak IBOutlet UILabel *lbTime;
+    __weak IBOutlet UILabel *lbName;
+    __weak IBOutlet UILabel *lbCostTime;
+    __weak IBOutlet UILabel *lbNum;
+    __weak IBOutlet UILabel *lbCount;
+    __weak IBOutlet UILabel *lbRight;
+    __weak IBOutlet UIView *bottomView;
+    __weak IBOutlet UIScrollView *myScrollView;
+}
+@end
+
+@implementation AnswerCardBoard
+
+- (void)load
+{
+}
+
+- (void)unload
+{
+}
+
+#pragma mark - Signal
+
+ON_CREATE_VIEWS( signal )
+{
+    [self showNaviBar];
+    self.title = @"答题卡";
+    [self loadContent];
+    if (_isOnlineEnter) {
+        //[self.navigationItem set]
+        [self.navigationItem setHidesBackButton:YES];
+    }
+    else{
+        [self showBackBtn];
+    }
+    BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/exam/stu_get_answer_card.action"]].PARAM(@"id",kUserInfo[@"id"]).PARAM(@"examRecordId",_examRecordId);
+    request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+    request.tag = 9527;
+}
+
+ON_DELETE_VIEWS( signal )
+{
+}
+
+ON_LAYOUT_VIEWS( signal )
+{
+}
+
+ON_WILL_APPEAR( signal )
+{
+}
+
+ON_DID_APPEAR( signal )
+{
+}
+
+ON_WILL_DISAPPEAR( signal )
+{
+}
+
+ON_DID_DISAPPEAR( signal )
+{
+}
+
+ON_SIGNAL3( BeeUINavigationBar, LEFT_TOUCHED, signal )
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+ON_SIGNAL3( BeeUINavigationBar, RIGHT_TOUCHED, signal )
+{
+}
+
+- (void)loadContent{
+}
+
+- (void)handleRequest:(BeeRequest *)request
+{
+    if(request.failed)
+    {
+        
+        NETWORK_ERROR
+        //[[BeeUITipsCenter sharedInstance] presentFailureTips:@"加载失败"];
+    }
+    else if (request.succeed)
+    {
+        
+        id json = [request.responseString mutableObjectFromJSONString];
+        NSLog(@"%@",json);
+        switch ([json[@"STATUS"] intValue]) {
+            case 0:
+            {
+                if (request.tag == 9527) {
+//                    arrayAnalysis = json[@"result"];
+//                    [myTableView reloadData];
+                    NSMutableDictionary *dict = json[@"result"];
+                    lbClassName.text = [NSString stringWithFormat:@"名称:%@",dict[@"examName"]];
+                    questionDetail = dict[@"questionDetail"];
+                    lbTime.text = [NSString stringWithFormat:@"时间:%@",dict[@"currTime"]];
+                    lbName.text = [NSString stringWithFormat:@"姓名:%@",dict[@"stuName"]];
+                    
+                    if ([dict[@"costTime"] isEqualToString:@"null"]) {
+                        lbCostTime.text = @"0分钟";
+                    }else{
+                         lbCostTime.text = [NSString stringWithFormat:@"%@分钟",dict[@"costTime"]];
+                    }
+                    lbNum.text = [NSString stringWithFormat:@"%@/%@道",dict[@"completeNum"],dict[@"questionNum"]];
+                    lbRight.text = [NSString stringWithFormat:@"%@",dict[@"correctNum"]];
+                    lbCount.text = [NSString stringWithFormat:@"道/%@道",dict[@"questionNum"]];
+                    
+                    for (int i = 0; i < questionDetail.count; i++) {
+                        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+                        btn.tag = i;
+                        CGFloat width = (kWidth - 40)/5.0;
+                        btn.frame = CGRectMake(20+width*(i%5), 10+33*(i/5), width, 33);
+                        [btn addTarget:self action:@selector(touchBtn:) forControlEvents:UIControlEventTouchUpInside];
+                        [bottomView addSubview:btn];
+                        NSMutableDictionary *dict2 = questionDetail[i];
+                        
+                        bottomView.frame = CGRectMake(0, bottomView.top, kWidth, btn.bottom+10);
+                        
+                        myScrollView.contentSize = CGSizeMake(kWidth, bottomView.bottom);
+                        
+                        BaseLabel *lb = [BaseLabel initLabel:[NSString stringWithFormat:@"%d.",i+1] font:kFont(13) color:HEX_RGB(0x9d9d9d) textAlignment:NSTextAlignmentRight];
+                        lb.frame = CGRectMake(0, 0, btn.width/2.0-13, btn.height);
+                        [btn addSubview:lb];
+                        
+                        switch ([dict2[@"answerFlag"] intValue]) {
+                            case 0:
+                            {
+                                [btn setImage:IMAGESTRING(@"fork") forState:UIControlStateNormal];
+                            }
+                                break;
+                            case 1:
+                            {
+                                [btn setImage:IMAGESTRING(@"check_right") forState:UIControlStateNormal];
+                            }
+                                break;
+                            case 2:
+                            {
+                                [btn setImage:IMAGESTRING(@"gray") forState:UIControlStateNormal];
+                            }
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+                break;
+            case 2:
+            {
+                [[BeeUITipsCenter sharedInstance] presentMessageTips:@"没有更多查询结果"];
+            }
+                break;
+                
+        }
+    }
+}
+
+- (void)touchBtn:(UIButton *)btn{
+    int tag = (int)btn.tag;
+    NSMutableDictionary *dict = questionDetail[tag];
+    AnswerAnalysisBoard *board = [[AnswerAnalysisBoard alloc] init];
+    board.isError = NO;
+    board.answerRecordId = dict[@"answerRecordId"];
+    board.examRecordId = _examRecordId;
+    [self.stack pushBoard:board animated:YES];
+}
+- (IBAction)touchAllError:(id)sender {
+    AnswerAnalysisBoard *board = [[AnswerAnalysisBoard alloc] init];
+    board.isError = YES;
+    board.examRecordId = _examRecordId;
+    [self.stack pushBoard:board animated:YES];
+}
+
+- (IBAction)touchAllParser:(id)sender {
+    AnswerAnalysisBoard *board = [[AnswerAnalysisBoard alloc] init];
+    board.isError = NO;
+    board.examRecordId = _examRecordId;
+    [self.stack pushBoard:board animated:YES];
+}
+
+
+@end

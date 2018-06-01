@@ -1,0 +1,537 @@
+//
+//	 ______    ______    ______    
+//	/\  __ \  /\  ___\  /\  ___\   
+//	\ \  __<  \ \  __\_ \ \  __\_ 
+//	 \ \_____\ \ \_____\ \ \_____\ 
+//	  \/_____/  \/_____/  \/_____/ 
+//
+//	Powered by BeeFramework
+//
+//
+//  CurriculumBoard.m
+//  ClassRoom
+//
+//  Created by he chao on 6/27/14.
+//  Copyright (c) 2014 he chao. All rights reserved.
+//
+
+#import "CurriculumBoard.h"
+#import "CurriculumCell.h"
+#import "PlayViewController.h"
+#import "PreviewDataSource.h"
+#import "JSPlaybackCourseViewController.h"
+#import "JYDModelLocator.h"
+
+#pragma mark -
+
+@interface CurriculumBoard()
+{
+	//<#@private var#>
+    PreviewDataSource *dataSource;
+}
+@end
+
+@implementation CurriculumBoard
+DEF_SIGNAL(NAVI_BACK)
+DEF_SIGNAL(REJECT)
+DEF_SIGNAL(ACCEPT)
+DEF_SIGNAL(MESSAGE)
+DEF_SIGNAL(REQUEST)
+DEF_SIGNAL(PLAY)
+DEF_SIGNAL(DOWNLOAD)
+DEF_SIGNAL(PLAY_VIDEO)
+DEF_SIGNAL(OPEN_FILE)
+DEF_SIGNAL(CLOSE)
+
+- (void)load
+{
+    selIndex = -1;
+    arrayCurriculum = [[NSMutableArray alloc] init];
+}
+
+- (void)unload
+{
+}
+
+#pragma mark - Signal
+
+ON_CREATE_VIEWS( signal )
+{
+    if (IOS7_OR_LATER) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.extendedLayoutIncludesOpaqueBars = NO;
+        self.modalPresentationCapturesStatusBarAppearance = NO;
+        
+        UIView *vi = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.viewWidth, 20)];
+        vi.backgroundColor = [UIColor blackColor];
+        [self.view addSubview:vi];
+    }
+    
+    self.view.backgroundColor = RGB(242, 242, 242);
+    [self loadContent];
+}
+
+ON_DELETE_VIEWS( signal )
+{
+}
+
+ON_LAYOUT_VIEWS( signal )
+{
+}
+
+ON_WILL_APPEAR( signal )
+{
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+ON_DID_APPEAR( signal )
+{
+}
+
+ON_WILL_DISAPPEAR( signal )
+{
+}
+
+ON_DID_DISAPPEAR( signal )
+{
+}
+
+ON_SIGNAL3( BeeUINavigationBar, LEFT_TOUCHED, signal )
+{
+}
+
+ON_SIGNAL3( BeeUINavigationBar, RIGHT_TOUCHED, signal )
+{
+}
+
+ON_SIGNAL2(CurriculumBoard, signal) {
+    if ([signal is:CurriculumBoard.NAVI_BACK]) {
+        [self.stack popBoardAnimated:YES];
+    }
+    else if ([signal is:CurriculumBoard.REJECT]) {
+    }
+    else if ([signal is:CurriculumBoard.ACCEPT]) {
+    }
+    else if ([signal is:CurriculumBoard.MESSAGE]) {
+        ChatBoard *board = [[ChatBoard alloc] init];
+        board.dictFriend = self.dictUser;
+        [self.stack pushBoard:board animated:YES];
+    }
+    else if ([signal is:CurriculumBoard.REQUEST]) {
+        if ([self.dictUser[@"friendAuth"] boolValue]) {
+            UIAlertView *myAlertView = [[UIAlertView alloc] initWithTitle:@"验证申请" message:@"您需要发送验证申请,并在对方通过后才能成为朋友。" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+            myAlertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+            UITextField *field = [myAlertView textFieldAtIndex:0];
+            field.placeholder = @"50字内";
+            [myAlertView show];
+        }
+        else {
+            [self sendRequestData:@"lll"];
+        }
+    }
+    else if ([signal is:CurriculumBoard.PLAY]) {
+        NSMutableDictionary *dict = signal.object;
+        NSLog(@"%@",dict);
+        BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/course/get_course_video.action"]].PARAM(@"id",kUserInfo[@"id"]).PARAM(@"courseId",dict[@"courseId"]).PARAM(@"courseSchedId",dict[@"id"]);
+        request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+        request.tag = 9530;
+    }
+    else if ([signal is:CurriculumBoard.DOWNLOAD]) {
+        NSMutableDictionary *dict = signal.object;
+        BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/course/get_course_res.action"]].PARAM(@"id",kUserInfo[@"id"]).PARAM(@"courseId",dict[@"courseId"]).PARAM(@"courseSchedId",dict[@"id"]);
+        request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+        request.tag = 9531;
+    }
+    else if ([signal is:CurriculumBoard.PLAY_VIDEO]){
+        //NSString *strUrl = signal.object;
+        //PlayViewController *controller = [[PlayViewController alloc] initWithContentURL:[NSURL URLWithString:strUrl]];
+        //[self presentMoviePlayerViewControllerAnimated:controller];
+        
+        //add by zhaojian
+        NSMutableDictionary *dictResource = signal.object;
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        NSString *url = [NSString stringWithFormat:@"%@%@",kVeUrl,kVideoType];
+        [manager POST:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            if ([responseObject[@"STATUS"] isEqualToString :STATUS_SUCCESS]) {
+                JSPlaybackCourseViewController *mCtr = [[JSPlaybackCourseViewController alloc]init];
+                //课程唯一ID:@"958B56CBAC01491C85154784AA64EEF8"
+                mCtr.course_id = dictResource[@"uuid"];
+                //学校服务器地址:@"http://192.168.11.14:8089/JSmaster/"
+                mCtr.schoolServerAddress = dictResource[@"masterUrl"];
+                //打点信息服务器地址:@"http://192.168.11.14:88/ve/"
+                mCtr.veServerAddress = dictResource[@"veUrl"];
+                
+                /**
+                 *  视频类型获取
+                 */
+                mCtr.videoType = responseObject[@"result"][0][@"menu_type"];
+                mCtr.dic = dictResource;
+                [self presentViewController:mCtr animated:YES completion:nil];
+                
+            }
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            
+        }];
+    }
+    else if ([signal is:CurriculumBoard.OPEN_FILE]){
+        NSString *strKey = signal.object;
+        QLPreviewController *previewCtrl = [[QLPreviewController alloc] init];
+        //以下两行 commentted by zhaojian
+        //previewCtrl.delegate = self;
+        //PreviewDataSource *dataSource = [[PreviewDataSource alloc] init];
+        if (dataSource == nil) {
+            dataSource = [[PreviewDataSource alloc] init];
+        }
+        dataSource.path = [[BeeFileCache sharedInstance] fileNameForKey:strKey];//[[NSBundle mainBundle] pathForResource:@"5" ofType:@"pptx"];
+        JYDLog(@"dataSource.path:%@", dataSource.path);
+        previewCtrl.dataSource = dataSource;
+        [self presentViewController:previewCtrl animated:YES completion:^{
+            
+        }];
+    }
+    else if ([signal is:CurriculumBoard.CLOSE]) {
+        NSNumber *status = signal.object;
+        if ([status boolValue]) {
+            [videoPopupView removeFromSuperview];
+        }
+        else
+        {
+            if ([JYDModelLocator shareModelLocator].isDownloading)
+            {
+                [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请耐心等待下载..."];
+                return;
+            }
+            
+            [downloadPopupView removeFromSuperview];
+        }
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 1) {
+        UITextField *field = [alertView textFieldAtIndex:0];
+        if (kStrTrim(field.text).length==0) {
+            [[BeeUITipsCenter sharedInstance] presentMessageTips:@"请输入身份信息"];
+            return;
+        }
+        [self sendRequestData:field.text];
+    }
+}
+
+- (void)sendRequestData:(NSString *)strNote{
+    BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/friend/add_friend.action"]].PARAM(@"id",kUserInfo[@"id"]).PARAM(@"acceptFriendsId",self.dictUser[@"id"]).PARAM(@"remark",strNote);
+    request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+    request.tag = 9529;
+}
+
+- (void)loadContent{
+    BeeUIImageView *naviBar = [BeeUIImageView spawn];
+    naviBar.frame = CGRectMake(0, IOS7_OR_LATER?20:0, self.viewWidth, 44);
+    naviBar.image = IMAGESTRING(@"navi_bar2");
+    naviBar.userInteractionEnabled = YES;
+    [self.view addSubview:naviBar];
+    
+    BeeUIButton *btnBack = [BeeUIButton spawn];
+    btnBack.frame = CGRectMake(0, 0, 44, 44);
+    [btnBack setImage:IMAGESTRING(@"navi_back") forState:UIControlStateNormal];
+    [btnBack addSignal:CurriculumBoard.NAVI_BACK forControlEvents:UIControlEventTouchUpInside];
+    [naviBar addSubview:btnBack];
+    
+    
+    BeeUIImageView *imgCover = [BeeUIImageView spawn];
+    imgCover.frame = CGRectMake(0, IOS7_OR_LATER?20:0, self.viewWidth, 121);
+    imgCover.image = IMAGESTRING(@"demo_icon2");
+    imgCover.userInteractionEnabled = YES;
+    [self.view insertSubview:imgCover belowSubview:naviBar];
+    
+    BeeUIImageView *imgCurriculum = [BeeUIImageView spawn];
+    imgCurriculum.image = IMAGESTRING(@"curriculum");
+    imgCurriculum.frame = CGRectMake(13, imgCover.bottom-50, 52, 16);
+    [imgCover addSubview:imgCurriculum];
+    
+    
+    AvatarView *avatar = [AvatarView initFrame:CGRectMake(0, 0, 80, 80) image:IMAGESTRING(@"demo_icon3") borderColor:[UIColor whiteColor]];
+    avatar.center = CGPointMake(160, 50);
+    [avatar setImageWithURL:kImage100(self.dictUser[@"picUrl"]) placeholderImage:IMAGESTRING(@"default_avatar")];
+    [imgCover addSubview:avatar];
+    
+    BaseLabel *name = [BaseLabel initLabel:@"Leon" font:FONT(16) color:[UIColor whiteColor] textAlignment:NSTextAlignmentLeft];
+    name.frame = CGRectMake(avatar.right+10, avatar.top, 200, avatar.height);
+    name.text = self.dictUser[@"nickName"];
+    [imgCover addSubview:name];
+    
+    btnReject = [BaseButton initBaseBtn:IMAGESTRING(@"reject") highlight:IMAGESTRING(@"reject_pre") text:@"拒绝" textColor:[UIColor whiteColor] font:FONT(15)];
+    btnReject.frame = CGRectMake(160-90, imgCover.bottom-50, 75, 28);
+    [btnReject addSignal:CurriculumBoard.REJECT forControlEvents:UIControlEventTouchUpInside];
+    [imgCover addSubview:btnReject];
+    
+    btnAccept = [BaseButton initBaseBtn:IMAGESTRING(@"accept") highlight:IMAGESTRING(@"accept_pre") text:@"接受" textColor:[UIColor whiteColor] font:FONT(15)];
+    btnAccept.frame = CGRectMake(160+15, imgCover.bottom-50, 75, 28);
+    [btnAccept addSignal:CurriculumBoard.ACCEPT forControlEvents:UIControlEventTouchUpInside];
+    [imgCover addSubview:btnAccept];
+    
+    btnMessage = [BaseButton initBaseBtn:IMAGESTRING(@"send_message") highlight:IMAGESTRING(@"send_message_pre") text:@"发送消息" textColor:[UIColor whiteColor] font:FONT(15)];
+    btnMessage.frame = CGRectMake(200, imgCover.bottom-55, 100, 33);
+    [btnMessage addSignal:CurriculumBoard.MESSAGE forControlEvents:UIControlEventTouchUpInside];
+    [imgCover addSubview:btnMessage];
+    
+    btnRequest = [BaseButton initBaseBtn:IMAGESTRING(@"request") highlight:nil];
+    btnRequest.frame = CGRectMake(107, imgCover.bottom-55, 105, 40);
+    [btnRequest addSignal:CurriculumBoard.REQUEST forControlEvents:UIControlEventTouchUpInside];
+    [imgCover addSubview:btnRequest];
+    
+    if ([self.dictUser[@"id"] intValue]==[kUserId intValue]) {
+        self.type = 4;
+    }
+    
+    switch (self.type) {
+        case 1:
+        {
+            btnReject.hidden = YES;
+            btnAccept.hidden = YES;
+            btnRequest.hidden = YES;
+            btnMessage.hidden = NO;
+        }
+            break;
+        case 2:
+        {
+            btnAccept.hidden = NO;
+            btnReject.hidden = NO;
+            btnMessage.hidden = YES;
+            btnRequest.hidden = YES;
+        }
+            break;
+        case 3:
+        {
+            btnReject.hidden = YES;
+            btnAccept.hidden = YES;
+            btnMessage.hidden = YES;
+            btnRequest.hidden = NO;
+        }
+            break;
+        case 4: //用户自己
+        {
+            btnReject.hidden = YES;
+            btnAccept.hidden = YES;
+            btnMessage.hidden = YES;
+            btnRequest.hidden = YES;
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
+    myTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, naviBar.bottom, self.viewWidth, self.viewHeight-naviBar.bottom)];
+    myTableView.delegate = self;
+    myTableView.dataSource = self;
+    myTableView.backgroundColor = [UIColor clearColor];
+    myTableView.separatorStyle = UITableViewCellSelectionStyleNone;
+    [self.view addSubview:myTableView];
+    myTableView.tableHeaderView = imgCover;
+    myTableView.tableFooterView = [[UIView alloc] init];
+    
+    pageOffset = 0;
+    [self getCurriculumList];
+    
+//    CurriculumBoard *board = self;
+//    [myTableView addPullToRefreshWithActionHandler:^{
+//        [board refresh];
+//    }];
+//    
+//    [myTableView addInfiniteScrollingWithActionHandler:^{
+//        
+//        [board more];
+//    }];
+}
+
+- (void)refresh{
+    pageOffset = 0;
+    [self getCurriculumList];
+}
+
+- (void)more{
+    pageOffset += pageSize;
+    [self getCurriculumList];
+}
+
+- (void)getCurriculumList{
+    BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/my/get_teacher_course.action"]].PARAM(@"id",kUserInfo[@"id"]).PARAM(@"userId",self.dictUser[@"id"]);
+    request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+    request.tag = 9527;
+}
+
+- (void)getSimpleCourseChar{
+    BeeHTTPRequest *request = [self POST:[NSString stringWithFormat:@"%@%@",kSchoolUrl,@"app/my/get_simple_course_char.action"]].PARAM(@"id",kUserInfo[@"id"]).PARAM(@"courseId",dictSelCurriculm[@"id"]);
+    request.HEADER(@"sessionId",kUserInfo[@"sessionId"]);
+    request.tag = 9528;
+}
+
+- (void)handleRequest:(BeeRequest *)request
+{
+    if(request.failed)
+    {
+        NETWORK_ERROR
+        //[[BeeUITipsCenter sharedInstance] presentFailureTips:@"加载失败"];
+    }
+    else if (request.succeed)
+    {
+        if (myTableView) {
+            [myTableView.pullToRefreshView stopAnimating];
+            [myTableView.infiniteScrollingView stopAnimating];
+        }
+        id json = [request.responseString mutableObjectFromJSONString];
+        NSLog(@"========%@",json);
+        switch ([json[@"STATUS"] intValue]) {
+            case 0:
+            {
+                switch (request.tag) {
+                    case 9527:
+                    {
+                        if (pageOffset==0) {
+                            [arrayCurriculum removeAllObjects];
+                        }
+                        [arrayCurriculum addObjectsFromArray:json[@"result"]];
+                        [myTableView reloadData];
+                    }
+                        break;
+                    case 9528:
+                    {
+                        [dictSelCurriculm setObject:json[@"result"] forKey:@"courseChar"];
+                        [myTableView reloadData];
+                    }
+                        break;
+                    case 9529:
+                    {
+                        if ([self.dictUser[@"friendAuth"] boolValue]) {
+                            [BeeUIAlertView showMessage:@"发送成功，等待对方验证" cancelTitle:@"确定"];
+                        }
+                        else {
+                            [BeeUIAlertView showMessage:@"添加好友成功" cancelTitle:@"确定"];
+                            btnReject.hidden = YES;
+                            btnAccept.hidden = YES;
+                            btnRequest.hidden = YES;
+                            btnMessage.hidden = NO;
+                        }
+                    }
+                        break;
+                    case 9530:
+                    {
+                        videoPopupView = nil;
+                        
+                        videoPopupView = [[DownloadPopupView alloc] initWithFrame:CGRectMake(0, 0, self.viewWidth, self.viewHeight-(IOS7_OR_LATER?64:44))];
+                        videoPopupView.arrayData = json[@"result"];
+                        videoPopupView.isVideo = YES;
+                        videoPopupView.isCurriculum = YES;
+                        [videoPopupView loadContent];
+                        [self.view addSubview:videoPopupView];
+                    }
+                        break;
+                    case 9531:
+                    {
+                        downloadPopupView = nil;
+                        
+                        downloadPopupView = [[DownloadPopupView alloc] initWithFrame:CGRectMake(0, 0, self.viewWidth, self.viewHeight-(IOS7_OR_LATER?64:44))];
+                        downloadPopupView.arrayData = json[@"result"];
+                        downloadPopupView.isVideo = NO;
+                        downloadPopupView.isCurriculum = YES;
+                        [downloadPopupView loadContent];
+                        [self.view addSubview:downloadPopupView];
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+                break;
+            case 2:
+            {
+                switch (request.tag) {
+                    case 9530:
+                    {
+                        [[BeeUITipsCenter sharedInstance] presentMessageTips:@"此讲暂时没有轻课件"];
+                    }
+                        break;
+                    case 9531:
+                    {
+                        [[BeeUITipsCenter sharedInstance] presentMessageTips:@"此讲暂时没有课件可供下载"];
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+                break;
+            default:
+            {
+                [[BeeUITipsCenter sharedInstance] presentMessageTips:json[@"ERRMSG"]];
+            }
+                break;
+                
+        }
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == selIndex) {
+        return 78+50*[dictSelCurriculm[@"courseChar"] count];
+    }
+    return 88;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return arrayCurriculum.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    CurriculumCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if (nil == cell) {
+        cell = [[CurriculumCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        [cell initSelf];
+    }
+    cell.backgroundColor = [UIColor clearColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.isSelected = indexPath.row==selIndex;
+    cell.dictCurriculum = arrayCurriculum[indexPath.row];
+    [cell load];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (selIndex == indexPath.row) {
+        selIndex = -1;
+        [myTableView reloadData];
+    }
+    else {
+        selIndex = indexPath.row;
+        //[myTableView reloadData];
+        dictSelCurriculm = arrayCurriculum[indexPath.row];
+        if (dictSelCurriculm[@"courseChar"]) {
+            [myTableView reloadData];
+        }
+        else
+            [self getSimpleCourseChar];
+    }
+//    QLPreviewController *previewCtrl = [[QLPreviewController alloc] init];
+//    previewCtrl.delegate = self;
+//    PreviewDataSource *dataSource = [[PreviewDataSource alloc] init];
+//    dataSource.path = [[NSBundle mainBundle] pathForResource:@"5" ofType:@"pptx"];
+//    previewCtrl.dataSource = dataSource;
+//    [self presentViewController:previewCtrl animated:YES completion:^{
+//        
+//    }];
+    //[self.stack pushBoard:dataSource animated:YES];
+}
+
+//- (NSInteger)numberOfPreviewItemsInPreviewController:(QLPreviewController *)controller{
+//    return 1;
+//}
+
+- (BOOL)previewController:(QLPreviewController *)controller shouldOpenURL:(NSURL *)url forPreviewItem:(id <QLPreviewItem>)item{
+    return NO;
+}
+
+@end

@@ -1,0 +1,1 @@
+../../../BeeFramework/services/bee.services.share.weixin/vendor/WeixinSDK/WXApi.h

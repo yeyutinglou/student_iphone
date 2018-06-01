@@ -1,0 +1,1 @@
+../../../BeeFramework/services/bee.services.share.weixin/bee.services.share.weixin.h

@@ -1,0 +1,5 @@
+PODS_BEEFRAMEWORK_CLANG_CXX_LANGUAGE_STANDARD = gnu++0x
+PODS_BEEFRAMEWORK_CLANG_CXX_LIBRARY = libstdc++
+PODS_BEEFRAMEWORK_CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES
+PODS_BEEFRAMEWORK_HEADER_SEARCH_PATHS = $(SDKROOT)/usr/include/libz, $(SDKROOT)/usr/include/libxml2
+PODS_BEEFRAMEWORK_OTHER_LDFLAGS = -l"sqlite3" -l"xml2" -l"z" -framework "AVFoundation" -framework "CFNetwork" -framework "CoreMedia" -framework "CoreVideo" -framework "MobileCoreServices" -framework "QuartzCore" -framework "Security" -framework "SystemConfiguration"

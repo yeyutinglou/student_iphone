@@ -1,0 +1,188 @@
+//
+//	 ______    ______    ______    
+//	/\  __ \  /\  ___\  /\  ___\   
+//	\ \  __<  \ \  __\_ \ \  __\_ 
+//	 \ \_____\ \ \_____\ \ \_____\ 
+//	  \/_____/  \/_____/  \/_____/ 
+//
+//	Powered by BeeFramework
+//
+//
+//  OnlineTestBoard.m
+//  student_iphone
+//
+//  Created by he chao on 15/1/24.
+//  Copyright (c) 2015年 he chao. All rights reserved.
+//
+
+#import "OnlineTestBoard.h"
+#import "AppDelegate.h"
+#import "AnswerCardBoard.h"
+#import "SocketData.h"
+
+#pragma mark -
+
+@interface OnlineTestBoard()
+{
+	//<#@private var#>
+    __weak IBOutlet UIWebView *myWebView;
+    BOOL isShow;
+    BOOL isExit;
+}
+@end
+
+@implementation OnlineTestBoard
+
+- (void)load
+{
+}
+
+- (void)unload
+{
+}
+
+#pragma mark - Signal
+- (void)dealloc{
+    [self unobserveNotification:@"exam"];
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    delegate.isTestMode = NO;
+}
+
+ON_NOTIFICATION(notification){
+    if ([notification is:@"exam"]) {
+        _dictExam = notification.object;
+        [self showExamDetail];
+    }
+}
+
+ON_CREATE_VIEWS( signal )
+{
+    self.title = @"测验";
+    [self observeNotification:@"exam"];
+    [self showExamDetail];
+}
+
+ON_DELETE_VIEWS( signal )
+{
+}
+
+ON_LAYOUT_VIEWS( signal )
+{
+}
+
+ON_WILL_APPEAR( signal )
+{
+//    [self.navigationController setNavigationBarHidden:NO animated:YES];
+//    [self.navigationItem setHidesBackButton:YES];
+//    [self observeNotification:@"exam"];
+//    isShow = NO;
+//    //不是显示测试结果的详情页面 add by zhaojian
+//    [SocketData sharedInstance].isTestResultShow = NO;
+}
+
+ON_DID_APPEAR( signal )
+{
+}
+
+ON_WILL_DISAPPEAR( signal )
+{
+    [self unobserveNotification:@"exam"];
+}
+
+ON_DID_DISAPPEAR( signal )
+{
+}
+
+ON_SIGNAL3( BeeUINavigationBar, LEFT_TOUCHED, signal )
+{
+}
+
+ON_SIGNAL3( BeeUINavigationBar, RIGHT_TOUCHED, signal )
+{
+}
+
+//add by zhaojian 2015-05-08
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:YES];
+    isExit = NO;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [self.navigationItem setHidesBackButton:YES];
+    [self observeNotification:@"exam"];
+    [self showExamDetail];
+    isShow = NO;
+    //不是显示测试结果的详情页面 add by zhaojian
+    [SocketData sharedInstance].isTestResultShow = NO;
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    delegate.isTestMode = YES;
+}
+
+//add by zhaojian 2015-05-08
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:YES];
+    
+    [self unobserveNotification:@"exam"];
+    AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    delegate.isTestMode = NO;
+    isExit = NO;
+}
+
+- (void)showExamDetail{
+    if ([_dictExam[@"cmd"] intValue]==1) {
+        if (!isExit) {
+            NSString *strUrl = [NSString stringWithFormat:@"%@%@?machineType=phone&examRecordId=%@&id=%@",kSchoolUrl,@"app/exam/stu_get_exam_detail.action",_dictExam[@"examRecordId"],kUserInfo[@"id"]];
+            NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:strUrl]];
+            //清除UIWebView的缓存
+            [[NSURLCache  sharedURLCache]removeAllCachedResponses];
+            [myWebView loadRequest:request];
+        }
+        
+        isExit = YES;
+    }
+    else{
+        [myWebView stringByEvaluatingJavaScriptFromString:@"commitAnswer()"];
+        [[BeeUITipsCenter sharedInstance] presentLoadingTips:@"正在加载..." inView:self.view];
+        [self performSelector:@selector(getResultPage) withObject:nil afterDelay:5];
+    }
+}
+
+- (void)getResultPage{
+    [[BeeUITipsCenter sharedInstance] dismissTips];
+    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    AnswerCardBoard *board = [storyBoard instantiateViewControllerWithIdentifier:@"AnswerCardBoard"];//[[AnswerCardBoard alloc] init];
+    board.examRecordId = _dictExam[@"examRecordId"];
+    board.isOnlineEnter = YES;
+    [self.navigationController pushViewController:board animated:YES];
+    //UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//    TestAnalysisDetailViewController *controller = [storyBoard instantiateViewControllerWithIdentifier:@"TestAnalysisDetailViewController"];
+//    controller.isOnlineEnter = YES;
+//    controller.strExamRecordId = _dictExam[@"examRecordId"];
+//    [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+    NSURL *url = request.URL;
+    NSString *str = [NSString stringWithFormat:@"%@",url];
+    if ([str hasPrefix:@"gaojiao://exam?action=saveResult"] && !isShow && [_dictExam[@"cmd"] intValue]!=2) {
+//        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"您确认要交卷吗？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"交卷", nil];
+//        [alertView show];
+        isShow = YES;
+        //已经显示了测验结果---add by zhaojian
+        [SocketData sharedInstance].isTestResultShow = YES;
+        [myWebView stringByEvaluatingJavaScriptFromString:@"commitAnswer()"];
+        [[BeeUITipsCenter sharedInstance] presentLoadingTips:@"正在加载..." inView:self.view];
+        [self performSelector:@selector(getResultPage) withObject:nil afterDelay:5];
+    }
+    return YES;
+}
+
+//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+//    if (buttonIndex == 1) {
+//        [myWebView stringByEvaluatingJavaScriptFromString:@"commitAnswer()"];
+//        [[BeeUITipsCenter sharedInstance] presentLoadingTips:@"正在加载..." inView:self.view];
+//        [self performSelector:@selector(getResultPage) withObject:nil afterDelay:5];
+//    }
+//}
+
+@end

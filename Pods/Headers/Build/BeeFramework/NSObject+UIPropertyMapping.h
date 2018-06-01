@@ -1,0 +1,1 @@
+../../../BeeFramework/framework/mvc/view/dom-capability/extension/NSObject+UIPropertyMapping.h

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>4582BA8A-80A8-4D3D-97FB-53164E290DA7</string>
+	<key>IDESourceControlProjectName</key>
+	<string>student_iphone</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>bbacd258-4a6b-11e2-ae1c-859b02d95312++6373</key>
+		<string>http://111.204.62.1:8888/svn/test/IOS/student_iphone</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>student_iphone.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>bbacd258-4a6b-11e2-ae1c-859b02d95312++6373</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>bbacd258-4a6b-11e2-ae1c-859b02d95312++6373</key>
+		<string>http://111.204.62.1:8888/svn/test</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://111.204.62.1:8888/svn/test/IOS/student_iphone/student_iphone.xcworkspace</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>bbacd258-4a6b-11e2-ae1c-859b02d95312++6373</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>bbacd258-4a6b-11e2-ae1c-859b02d95312++6373</string>
+			<key>IDESourceControlWCCName</key>
+			<string>student_iphone</string>
+		</dict>
+	</array>
+</dict>
+</plist>

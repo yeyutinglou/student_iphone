@@ -1,0 +1,1 @@
+../../../BeeFramework/framework/system/database/extension/BeeDatabase+BeeActiveRecord.h

@@ -1,0 +1,31 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_5_0
+#warning "This project uses features only available in iOS SDK 5.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import "BaseBoard.h"
+    #import "BaseLabel.h"
+    #import "Default.h"
+    #import "AvatarView.h"
+    #import "BaseButton.h"
+#import "MainBoard.h"
+#import "UIImageView+WebCache.h"
+#import "AFNetworking.h"
+//1.自定义Log
+#ifdef DEBUG
+#define JYDLog(...) NSLog(__VA_ARGS__)
+#else
+#define JYDLog(...)
+#endif
+
+#endif

@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9a66170c-f1dc-11e3-af11-3dcf6cc60699++4974",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "9a66170c-f1dc-11e3-af11-3dcf6cc60699++4974" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "9a66170c-f1dc-11e3-af11-3dcf6cc60699++4974" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E3F3B9B5-334E-4189-89ED-0027A95A975B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "9a66170c-f1dc-11e3-af11-3dcf6cc60699++4974" : "iOS\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "student_iphone",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "student_iphone\/student_iphone.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/172.16.52.44:8888\/svn\/gaojiao_app",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9a66170c-f1dc-11e3-af11-3dcf6cc60699++4974"
+    }
+  ]
+}
